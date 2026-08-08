@@ -1,0 +1,129 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="networkx" />
+          <option value="torch" />
+          <option value="torchaudio" />
+          <option value="torchvision" />
+          <option value="flatbuffers" />
+          <option value="onnxruntime" />
+          <option value="tk" />
+          <option value="absl-py" />
+          <option value="attrs" />
+          <option value="certifi" />
+          <option value="cffi" />
+          <option value="charset-normalizer" />
+          <option value="comtypes" />
+          <option value="contourpy" />
+          <option value="customtkinter" />
+          <option value="cycler" />
+          <option value="darkdetect" />
+          <option value="filelock" />
+          <option value="fonttools" />
+          <option value="fsspec" />
+          <option value="idna" />
+          <option value="importlib_resources" />
+          <option value="Jinja2" />
+          <option value="kiwisolver" />
+          <option value="MarkupSafe" />
+          <option value="matplotlib" />
+          <option value="mediapipe" />
+          <option value="mpmath" />
+          <option value="numpy" />
+          <option value="opencv-contrib-python" />
+          <option value="opencv-python" />
+          <option value="packaging" />
+          <option value="pandas" />
+          <option value="pillow" />
+          <option value="polars" />
+          <option value="protobuf" />
+          <option value="psutil" />
+          <option value="pycparser" />
+          <option value="pyparsing" />
+          <option value="pypiwin32" />
+          <option value="python-dateutil" />
+          <option value="pyttsx3" />
+          <option value="pytz" />
+          <option value="pywin32" />
+          <option value="PyYAML" />
+          <option value="requests" />
+          <option value="scipy" />
+          <option value="six" />
+          <option value="sounddevice" />
+          <option value="sympy" />
+          <option value="typing_extensions" />
+          <option value="tzdata" />
+          <option value="ultralytics" />
+          <option value="ultralytics-thop" />
+          <option value="urllib3" />
+          <option value="zipp" />
+          <option value="annotated-doc" />
+          <option value="appdirs" />
+          <option value="argon2-cffi" />
+          <option value="astunparse" />
+          <option value="atomicwrites" />
+          <option value="ecdsa" />
+          <option value="fastapi" />
+          <option value="fpdf" />
+          <option value="gast" />
+          <option value="google-pasta" />
+          <option value="grpcio" />
+          <option value="httptools" />
+          <option value="keras" />
+          <option value="libclang" />
+          <option value="mkl-service" />
+          <option value="ml_dtypes" />
+          <option value="namex" />
+          <option value="opt_einsum" />
+          <option value="optree" />
+          <option value="polars-runtime-32" />
+          <option value="pydantic" />
+          <option value="pydantic-settings" />
+          <option value="pyls-spyder" />
+          <option value="PyQt5" />
+          <option value="PyQtWebEngine" />
+          <option value="PySide6" />
+          <option value="python-dotenv" />
+          <option value="python-jose" />
+          <option value="python-multipart" />
+          <option value="rsa" />
+          <option value="shiboken6" />
+          <option value="SQLAlchemy" />
+          <option value="starlette" />
+          <option value="tensorboard" />
+          <option value="tensorboard-data-server" />
+          <option value="tensorflow" />
+          <option value="termcolor" />
+          <option value="uvicorn" />
+          <option value="watchfiles" />
+          <option value="websockets" />
+          <option value="qdrant-client" />
+          <option value="telebot" />
+          <option value="aiogram" />
+          <option value="moviepy" />
+          <option value="booktype" />
+          <option value="psycopg2-binary" />
+          <option value="asyncpg" />
+          <option value="streamlit-file-browser" />
+          <option value="pyTelegramBotAPI" />
+          <option value="gspread" />
+          <option value="google" />
+          <option value="paddleocr" />
+          <option value="easyocr" />
+          <option value="paddlepaddle" />
+          <option value="pyserial" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyStubPackagesAdvertiser" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="pandas" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
