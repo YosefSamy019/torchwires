@@ -116,7 +116,7 @@ class Repo:
             self,
             loss_name: str,
             loss_function: Callable[[BatchState], Any],
-            weight_function: Callable[[BatchState], float],
+            weight_function: Callable[[BatchState], float] = lambda _: 1.0,
     ):
         step = LossStep(
             loss_name=loss_name,
