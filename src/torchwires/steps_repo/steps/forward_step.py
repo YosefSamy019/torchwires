@@ -1,5 +1,7 @@
 from typing import List
 
+import torch
+
 from ..base_step import BaseStep
 from ...common.logger.logger import print_log
 from ...models_repo.model_node import ModelNode
@@ -20,15 +22,14 @@ class ForwardStep(BaseStep):
         self._inputs: List[str] = inputs
         self._outputs: List[str] = outputs
 
-
-
     def get_trackable_features(self) -> list[str]:
         return []
 
     def execute(
             self,
             models_repo: ModelsRepo,
-            state: BatchState
+            state: BatchState,
+            device: torch.device | str,
     ):
         model: ModelNode = models_repo[self._model_name]
 

@@ -3,7 +3,6 @@ from typing import Callable, Any
 import torch
 
 from ..base_step import BaseStep
-from ...common.logger.logger import print_log
 from ...constants.constants import WEIGHT_ANNOT_FOR_LOSS_NAME, EFF_ANNOT_FOR_LOSS_NAME, RAW_ANNOT_FOR_LOSS_NAME
 from ...models_repo.models_repo import ModelsRepo
 from ...state.batch_state import BatchState
@@ -23,7 +22,6 @@ class LossStep(BaseStep):
         self._loss_function = loss_function
         self._weight_function = weight_function
 
-
     def get_trackable_features(self) -> list[str]:
         return [
             f"{self._loss_name}{RAW_ANNOT_FOR_LOSS_NAME}",
@@ -34,11 +32,16 @@ class LossStep(BaseStep):
     def execute(
             self,
             models_repo: ModelsRepo,
-            state: BatchState
+            state: BatchState,
+            device: torch.device | str,
     ):
         loss_val = self._loss_function(state)
         weight_val = self._weight_function(state)
         eff_loss = loss_val * weight_val
+
+        loss_val = self._safe_move_to_device(loss_val, device)
+        weight_val = self._safe_move_to_device(weight_val, device)
+        eff_loss = self._safe_move_to_device(eff_loss, device)
 
         state.set(
             key=f"{self._loss_name}{RAW_ANNOT_FOR_LOSS_NAME}",
@@ -55,7 +58,10 @@ class LossStep(BaseStep):
             value=eff_loss,
         )
 
-        cur_total_loss = state.get(BatchState.KEY_TOTAL_LOSS, default=torch.tensor(0.0))
+        cur_total_loss = state[BatchState.KEY_TOTAL_LOSS]
+
+        cur_total_loss = self._safe_move_to_device(cur_total_loss, device)
+
         cur_total_loss += eff_loss
 
         state.set(

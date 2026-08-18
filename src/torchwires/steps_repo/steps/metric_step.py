@@ -1,5 +1,7 @@
 from typing import Callable, Any
 
+import torch
+
 from ..base_step import BaseStep
 from ...common.logger.logger import print_log
 from ...models_repo.models_repo import ModelsRepo
@@ -23,9 +25,12 @@ class MetricStep(BaseStep):
     def execute(
             self,
             models_repo: ModelsRepo,
-            state: BatchState
+            state: BatchState,
+            device: torch.device | str,
     ):
         metric_val = self._metric_function(state)
+
+        metric_val = self._safe_move_to_device(metric_val, device)
 
         state.set(
             key=self._metric_name,

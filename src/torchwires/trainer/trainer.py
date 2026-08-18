@@ -193,7 +193,7 @@ class Trainer:
 
             # move to device
             for i in range(len(batch)):
-                batch[i].to(self._device)
+                batch[i] = batch[i].to(self._device)
 
             # pass batch to state var
             batch_state.set_all(
@@ -211,6 +211,7 @@ class Trainer:
             self._steps_repo.execute(
                 models_repo=self._models_repo,
                 state=batch_state,
+                device=self._device
             )
 
             # get final loss
@@ -261,7 +262,7 @@ class Trainer:
 
                 # move to device
                 for i in range(len(batch)):
-                    batch[i].to(self._device)
+                    batch[i] = batch[i].to(self._device)
 
                 # pass batch to state var
                 batch_state.set_all(
@@ -276,6 +277,7 @@ class Trainer:
                 self._steps_repo.execute(
                     models_repo=self._models_repo,
                     state=batch_state,
+                    device=self._device
                 )
 
                 # update epoch state
@@ -323,7 +325,7 @@ class Trainer:
 
                 # move to device
                 for i in range(len(batch)):
-                    batch[i].to(self._device)
+                    batch[i] = batch[i].to(self._device)
 
                 # pass batch to state var
                 batch_state.set_all(
@@ -338,6 +340,7 @@ class Trainer:
                 self._steps_repo.execute(
                     models_repo=self._models_repo,
                     state=batch_state,
+                    device=self._device
                 )
 
                 # update epoch state

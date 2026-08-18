@@ -1,5 +1,7 @@
 from typing import List
 
+import torch
+
 from ..common.logger.logger import print_log
 from ..models_repo.models_repo import ModelsRepo
 from .base_step import BaseStep
@@ -27,10 +29,12 @@ class StepsRepo:
     def execute(
             self,
             models_repo: ModelsRepo,
-            state: BatchState
+            state: BatchState,
+            device: torch.device | str,
     ):
         for step in self._steps:
             step.execute(
                 models_repo=models_repo,
-                state=state
+                state=state,
+                device=device
             )
