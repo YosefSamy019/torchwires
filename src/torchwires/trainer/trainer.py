@@ -192,8 +192,7 @@ class Trainer:
             )
 
             # move to device
-            for i in range(len(batch)):
-                batch[i].to(self._device)
+            batch.to(device=self._device)
 
             # pass batch to state var
             batch_state.set_all(
