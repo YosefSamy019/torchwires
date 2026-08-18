@@ -75,9 +75,10 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/torchwires
+      url: https://pypi.org/project/torchwires/
     permissions:
       id-token: write
+      contents: read
 
     steps:
       - name: Download distributions

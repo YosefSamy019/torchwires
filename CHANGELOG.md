@@ -12,6 +12,17 @@ All notable changes to this project are documented in this file.
 
 - No fixes released yet.
 
+## [0.0.2] - 2026-08-18
+
+### Added
+
+- No improvements released yet
+
+### Fixed
+
+- Fix some CI/CD problems.
+
+
 ## [0.0.1] - 2026-08-18
 
 ### Added
