@@ -1,15 +1,28 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "torchwires"
 version = "0.0.1"
 description = "A lightweight training framework for PyTorch"
 readme = "README.md"
 requires-python = ">=3.12"
-
+authors = [
+    { name = "Youssef Samy Youssef", email = "yosefsamy019@gmail.com" },
+]
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
-    "pytorch",
+    "torch",
+    "numpy",
+    "pandas",
+    "matplotlib",
 ]
 
-[project.optional-dependencies]
-dev = [
+[project.urls]
+Homepage = "https://github.com/YosefSamy019/torchwires"
+Repository = "https://github.com/YosefSamy019/torchwires"
 
-]
+[tool.setuptools.packages.find]
+where = ["src"]
