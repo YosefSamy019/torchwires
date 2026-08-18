@@ -1,6 +1,7 @@
 from typing import Callable, Any
 
 import torch
+from torch._C import device
 
 from ..base_step import BaseStep
 from ...common.logger.logger import print_log
@@ -22,7 +23,6 @@ class LossStep(BaseStep):
         self._loss_name = loss_name
         self._loss_function = loss_function
         self._weight_function = weight_function
-
 
     def get_trackable_features(self) -> list[str]:
         return [
@@ -55,7 +55,7 @@ class LossStep(BaseStep):
             value=eff_loss,
         )
 
-        cur_total_loss = state.get(BatchState.KEY_TOTAL_LOSS, default=torch.tensor(0.0))
+        cur_total_loss = state.get(BatchState.KEY_TOTAL_LOSS, default=torch.tensor(0.0, device=loss_val.device))
         cur_total_loss += eff_loss
 
         state.set(
