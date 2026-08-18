@@ -211,6 +211,7 @@ class Trainer:
             self._steps_repo.execute(
                 models_repo=self._models_repo,
                 state=batch_state,
+                device=self._device
             )
 
             # get final loss
@@ -276,6 +277,7 @@ class Trainer:
                 self._steps_repo.execute(
                     models_repo=self._models_repo,
                     state=batch_state,
+                    device=self._device
                 )
 
                 # update epoch state
@@ -338,6 +340,7 @@ class Trainer:
                 self._steps_repo.execute(
                     models_repo=self._models_repo,
                     state=batch_state,
+                    device=self._device
                 )
 
                 # update epoch state
