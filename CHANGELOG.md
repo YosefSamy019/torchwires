@@ -12,6 +12,17 @@ All notable changes to this project are documented in this file.
 
 - No fixes released yet.
 
+## [0.0.4] - 2026-08-18
+
+### Added
+
+- Add README file
+- Add classification-mnist example
+
+### Fixed
+
+- Fix some device management issues.
+
 ## [0.0.3] - 2026-08-18
 
 ### Added
@@ -22,7 +33,6 @@ All notable changes to this project are documented in this file.
 
 - Fix some device management issues.
 
-
 ## [0.0.2] - 2026-08-18
 
 ### Added
@@ -32,7 +42,6 @@ All notable changes to this project are documented in this file.
 ### Fixed
 
 - Fix some CI/CD problems.
-
 
 ## [0.0.1] - 2026-08-18
 
