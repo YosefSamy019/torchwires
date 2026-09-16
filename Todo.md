@@ -1,6 +1,6 @@
 # TODO List
 
-* Test Optimizer LR Schedulers [Done]
+* Test Optimizer LR Schedulers 
 * Add callbacks [Done]
 * Automatic checkpoint [Done]
 * predict [Done]

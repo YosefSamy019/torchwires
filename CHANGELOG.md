@@ -12,6 +12,12 @@ All notable changes to this project are documented in this file.
 
 - No fixes released yet.
 
+## [1.0.0] - 2026-09-17
+
+### Changes
+
+- Refactor the entire library to be cleaner
+
 ## [0.0.4] - 2026-08-18
 
 ### Added
