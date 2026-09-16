@@ -1,162 +1,35 @@
-from typing import Callable, Any, List, Literal
+import os
+from typing import Callable, Any
 
 import torch
 from torch import nn
 
-from ..callbacks.autosave_callback import AutoSaveCallback
-from ..callbacks.checkpoint_callback import CheckpointCallback
-from ..callbacks.callbacks_repo import CallbacksRepo
 from ..constants.constants import DEFAULT_CHECKPOINT_NAME
-from ..history.history import History
-from ..models_repo.models_repo import ModelsRepo
-from ..optimizers_repo.optimizers_repo import OptimizersRepo
-from ..state.batch_state import BatchState
-from ..steps_repo.steps.forward_step import ForwardStep
-from ..steps_repo.steps.loss_step import LossStep
-from ..steps_repo.steps.metric_step import MetricStep
-from ..steps_repo.steps_repo import StepsRepo
+from ..models.models_repo import ModelsRepo
+from ..nodes.nodes_repo import NodesRepo
+from ..observer.observer import Observer
+from ..optimizers.optimizers_repo import OptimizersRepo
 
 
 class Repo:
     def __init__(
             self,
             repo_name: str,
-            load: bool = True,
+            auto_load: bool = True,
     ):
         self._repo_name = repo_name
         self._experiment = "exp_1"
 
         self._models_repo = ModelsRepo()
-        self._optimizers_repo = OptimizersRepo(models_repo=self._models_repo)
-        self._steps_repo = StepsRepo()
-        self._history = History()
+        self._optimizers_repo = OptimizersRepo()
+        self._observer = Observer()
+        self._nodes_repo = NodesRepo()
 
-        # Expose inner methods
-        self.get_model_node = self._models_repo.get_model_node
-        self.get_all_models_names = self._models_repo.get_all_models_names
+        os.makedirs(self._repo_name, exist_ok=True)
+        os.makedirs(os.path.join(self._repo_name, self.experiment), exist_ok=True)
 
-        if load:
+        if auto_load:
             self.load()
-
-    def load(
-            self,
-            checkpoint: str = DEFAULT_CHECKPOINT_NAME,
-    ):
-        self._models_repo.load(
-            checkpoint=checkpoint,
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-        )
-
-        self._optimizers_repo.load(
-            checkpoint=checkpoint,
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-        )
-
-        self._history.load(
-            experiment=self._experiment,
-            repo_name=self._repo_name,
-        )
-
-    def save(
-            self,
-            checkpoint: str = DEFAULT_CHECKPOINT_NAME,
-    ):
-        self._models_repo.save(
-            checkpoint=checkpoint,
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-        )
-
-        self._optimizers_repo.save(
-            checkpoint=checkpoint,
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-        )
-
-        self._history.save(
-            experiment=self._experiment,
-            repo_name=self._repo_name,
-        )
-
-    def register_model(
-            self,
-            name: str,
-            model: nn.Module,
-    ):
-        model_node = self._models_repo.register_model(
-            name=name,
-            model=model,
-        )
-
-        model_node.load_model(
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-            checkpoint=DEFAULT_CHECKPOINT_NAME
-        )
-
-    def register_optimizer(
-            self,
-            name: str,
-            optimizer: torch.optim.Optimizer | torch.optim.lr_scheduler.LRScheduler,
-    ):
-        optimizer_node = self._optimizers_repo.register_optimizer(
-            name=name,
-            optimizer=optimizer,
-        )
-
-        optimizer_node.load_optimizer(
-            repo_name=self._repo_name,
-            experiment=self._experiment,
-            checkpoint=DEFAULT_CHECKPOINT_NAME
-        )
-
-    def add_loss(
-            self,
-            loss_name: str,
-            loss_function: Callable[[BatchState], Any],
-            weight_function: Callable[[BatchState], float] = lambda _: 1.0,
-    ):
-        step = LossStep(
-            loss_name=loss_name,
-            loss_function=loss_function,
-            weight_function=weight_function
-        )
-
-        self._history.track_features(step.get_trackable_features())
-
-        self._steps_repo.add_step(step)
-
-    def add_metric(
-            self,
-            metric_name: str,
-            metric_function: Callable[[BatchState], Any],
-    ):
-        step = MetricStep(
-            metric_name=metric_name,
-            metric_function=metric_function,
-        )
-
-        self._history.track_features(step.get_trackable_features())
-
-        self._steps_repo.add_step(step)
-
-    def add_forward(
-            self,
-            model_name: str,
-            inputs: List[str],
-            outputs: List[str],
-    ):
-        step = ForwardStep(
-            model_name=model_name,
-            inputs=inputs,
-            outputs=outputs,
-        )
-
-        self._history.track_features(step.get_trackable_features())
-
-        self._steps_repo.add_step(step)
 
     @property
     def repo_name(self) -> str:
@@ -175,9 +48,99 @@ class Repo:
         return self._optimizers_repo
 
     @property
-    def steps_repo(self) -> StepsRepo:
-        return self._steps_repo
+    def observer(self) -> Observer:
+        return self._observer
 
     @property
-    def history(self) -> History:
-        return self._history
+    def nodes_repo(self) -> NodesRepo:
+        return self._nodes_repo
+
+    def load(
+            self,
+            checkpoint: str = DEFAULT_CHECKPOINT_NAME,
+    ):
+        self._models_repo.load(
+            checkpoint=checkpoint,
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+        self._optimizers_repo.load(
+            checkpoint=checkpoint,
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+        self._observer.load(
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+    def save(
+            self,
+            checkpoint: str = DEFAULT_CHECKPOINT_NAME,
+    ):
+        self._models_repo.save(
+            checkpoint=checkpoint,
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+        self._optimizers_repo.save(
+            checkpoint=checkpoint,
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+        self._observer.save(
+            repo_name=self._repo_name,
+            experiment=self._experiment,
+        )
+
+    def register(
+            self,
+            name: str,
+            value: nn.Module | torch.optim.Optimizer,
+    ):
+        if isinstance(value, nn.Module):
+            self._models_repo.register(
+                name=name,
+                model=value,
+            ).load_model(
+                repo_name=self._repo_name,
+                experiment=self._experiment,
+                checkpoint=DEFAULT_CHECKPOINT_NAME
+            )
+
+        elif isinstance(value, torch.optim.Optimizer):
+            self._optimizers_repo.register(
+                name=name,
+                optimizer=value,
+            ).load_optimizer(
+                repo_name=self._repo_name,
+                experiment=self._experiment,
+                checkpoint=DEFAULT_CHECKPOINT_NAME
+            )
+        else:
+            raise TypeError(
+                "Argument 'value' is not Supported"
+            )
+
+    def wire(
+            self,
+            name: str,
+            body: Callable[..., dict[str, Any]],
+            condition: Callable[..., bool] = lambda: True,
+            tracked_features: list[str] | None = None,
+    ):
+        self._nodes_repo.wire(
+            name=name,
+            body=body,
+            condition=condition,
+            models_repo=self.models_repo,
+            optimizers_repo=self.optimizers_repo,
+            observer=self.observer,
+        )
+
+        for f in tracked_features or []:
+            self._observer.track_feature(f)

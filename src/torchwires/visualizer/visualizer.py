@@ -3,29 +3,26 @@ from typing import Tuple, List
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
-from ..constants.constants import LOADER_TRAIN_TYPE, LOADER_VAL_TYPE
 from ..repo.repo import Repo
-from ..state.base_state import BaseState
 
 
 class Visualizer:
+    SPLIT_COL = 'split'
+    BATCH_COL = 'batch'
+    EPOCH_COL = 'epoch'
+    DEVICE_COL = 'device'
 
     @staticmethod
     def display_df(
             repo: Repo
     ):
-        df = repo.history.return_as_df()
+        df = repo.observer.get_pandas()
 
-        split_col = BaseState.KEY_LOADER_TYPE
-        batch_col = BaseState.KEY_BATCH_NO
-        epoch_col = BaseState.KEY_EPOCH_NO
-
-        df.drop(columns=[batch_col], inplace=True)
+        df.drop(columns=[Visualizer.BATCH_COL, Visualizer.DEVICE_COL], inplace=True)
 
         return df.groupby(
-            [epoch_col, split_col]
+            [Visualizer.EPOCH_COL, Visualizer.SPLIT_COL]
         ).mean()
 
     @staticmethod
@@ -41,20 +38,17 @@ class Visualizer:
             plt.style.available[style_no]
         )
 
-        df = repo.history.return_as_df()
+        df = repo.observer.get_pandas()
 
-        split_col = BaseState.KEY_LOADER_TYPE
-        batch_col = BaseState.KEY_BATCH_NO
-        epoch_col = BaseState.KEY_EPOCH_NO
-
-        all_splits = [LOADER_TRAIN_TYPE, LOADER_VAL_TYPE]
+        all_splits = ['train', 'val']
 
         all_features = list(df.columns)
 
         features_2_draw = all_features.copy()
-        features_2_draw.remove(split_col)
-        features_2_draw.remove(batch_col)
-        features_2_draw.remove(epoch_col)
+        features_2_draw.remove(Visualizer.EPOCH_COL)
+        features_2_draw.remove(Visualizer.BATCH_COL)
+        features_2_draw.remove(Visualizer.SPLIT_COL)
+        features_2_draw.remove(Visualizer.DEVICE_COL)
 
         n_rows = math.ceil(len(features_2_draw) / n_cols)
 
@@ -80,10 +74,10 @@ class Visualizer:
             row_idx, col_idx = idx // n_cols, idx % n_cols
 
             for split in all_splits:
-                split_df = df[df[split_col] == split]
+                split_df = df[df[Visualizer.SPLIT_COL] == split]
 
-                grouped_df = split_df.groupby(epoch_col)
-                x_data = grouped_df[epoch_col].mean()
+                grouped_df = split_df.groupby(Visualizer.EPOCH_COL)
+                x_data = grouped_df[Visualizer.EPOCH_COL].mean()
                 y_data = grouped_df[feature].mean()
 
                 if np.all(np.isnan(y_data)):
@@ -94,7 +88,7 @@ class Visualizer:
                     label=f"{split}",
                 )
 
-            axs[row_idx, col_idx].set_xlabel(epoch_col)
+            axs[row_idx, col_idx].set_xlabel(Visualizer.EPOCH_COL)
             axs[row_idx, col_idx].set_ylabel(feature)
             axs[row_idx, col_idx].legend()
 
@@ -116,22 +110,19 @@ class Visualizer:
             plt.style.available[style_no]
         )
 
-        split_col = BaseState.KEY_LOADER_TYPE
-        batch_col = BaseState.KEY_BATCH_NO
-        epoch_col = BaseState.KEY_EPOCH_NO
-
-        all_splits = [LOADER_TRAIN_TYPE, LOADER_VAL_TYPE]
+        all_splits = ['train', 'val']
         n_cols = len(all_splits)
 
         all_features = []
 
         for repo in repos:
-            all_features.extend(repo.history.get_tracked_features())
+            all_features.extend(repo.observer.get_pandas().columns.values.tolist())
 
         all_features = list(set(all_features))
-        all_features.remove(split_col)
-        all_features.remove(batch_col)
-        all_features.remove(epoch_col)
+        all_features.remove(Visualizer.EPOCH_COL)
+        all_features.remove(Visualizer.BATCH_COL)
+        all_features.remove(Visualizer.SPLIT_COL)
+        all_features.remove(Visualizer.DEVICE_COL)
 
         n_rows = len(all_features)
 
@@ -159,12 +150,12 @@ class Visualizer:
                 flag_del_cell = True
 
                 for repo in repos:
-                    df = repo.history.return_as_df()
-                    split_df = df[df[split_col] == col]
+                    df = repo.observer.get_pandas()
+                    split_df = df[df[Visualizer.SPLIT_COL] == col]
 
                     if feature in df.columns:
-                        grouped_df = split_df.groupby(epoch_col)
-                        x_data = grouped_df[epoch_col].mean()
+                        grouped_df = split_df.groupby(Visualizer.EPOCH_COL)
+                        x_data = grouped_df[Visualizer.EPOCH_COL].mean()
                         y_data = grouped_df[feature].mean()
 
                         if np.all(np.isnan(y_data)):
@@ -179,7 +170,7 @@ class Visualizer:
                 if flag_del_cell:
                     fig.delaxes(axs[row_idx, col_idx])
                 else:
-                    axs[row_idx, col_idx].set_xlabel(epoch_col)
+                    axs[row_idx, col_idx].set_xlabel(Visualizer.EPOCH_COL)
                     axs[row_idx, col_idx].set_ylabel(f"{col} {feature}")
                     axs[row_idx, col_idx].legend()
 

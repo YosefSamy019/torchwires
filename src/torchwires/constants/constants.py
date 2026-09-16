@@ -1,11 +1,6 @@
+from typing import Literal
+
 DEFAULT_CHECKPOINT_NAME = "last"
 
-RAW_ANNOT_FOR_LOSS_NAME = ".raw"
-WEIGHT_ANNOT_FOR_LOSS_NAME = ".weight"
-EFF_ANNOT_FOR_LOSS_NAME = ""
 
-LOADER_TRAIN_TYPE = "train"
-LOADER_VAL_TYPE = "val"
-LOADER_TEST_TYPE = "test"
-
-LR_ANNOT_FOR_OPTIMIZER_NAME = ".lr"
+SPLIT = Literal["train", "val", "test"]
