@@ -1,6 +1,5 @@
-from abc import ABC
-
-from ..state.epoch_state import EpochState
+from abc import ABC, abstractmethod
+from typing import Any
 
 
 class BaseCallback(ABC):
@@ -15,9 +14,20 @@ class BaseCallback(ABC):
     ):
         pass
 
+    def on_train_batch(
+            self,
+            train_record: dict[str, Any],
+    ):
+        pass
+
+    def on_val_batch(
+            self,
+            val_record: dict[str, Any],
+    ):
+        pass
+
     def on_epoch_end(
             self,
-            epoch_state: EpochState,
     ):
         pass
 

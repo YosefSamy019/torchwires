@@ -1,0 +1,67 @@
+import os.path
+
+import torch
+
+from ..common.logger.logger import print_log
+
+
+class OptimizerUnit:
+    _OPTIMIZER_EXTENSION = ".optimizer.pth"
+
+    def __init__(
+            self,
+            name: str,
+            optimizer: torch.optim.Optimizer,
+    ):
+        self._name = name
+        self._optimizer = optimizer
+
+    def load_optimizer(
+            self,
+            repo_name: str,
+            experiment: str,
+            checkpoint: str,
+    ):
+        path = str(
+            os.path.join(
+                repo_name, experiment, checkpoint, self._name + OptimizerUnit._OPTIMIZER_EXTENSION
+            )
+        )
+
+        if os.path.isfile(path):
+            self._optimizer.load_state_dict(torch.load(path))
+            print_log(
+                title=f"Optimizer {self._name} loaded",
+                content=f"path={path}",
+            )
+        else:
+            print_log(
+                title=f"Optimizer {self._name} cache not found",
+                content=f"path={path}",
+            )
+
+    def save_optimizer(
+            self,
+            repo_name: str,
+            experiment: str,
+            checkpoint: str,
+    ):
+        path = str(
+            os.path.join(
+                repo_name, experiment, checkpoint, self._name + OptimizerUnit._OPTIMIZER_EXTENSION
+            )
+        )
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        torch.save(self._optimizer.state_dict(), path)
+        print_log(
+            title=f"Optimizer {self._name} weights saved",
+            content=f"path={path}",
+        )
+
+    def zero_grad(self):
+        self._optimizer.zero_grad()
+
+    def step(self):
+        self._optimizer.step()

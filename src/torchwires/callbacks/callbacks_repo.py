@@ -1,7 +1,6 @@
-from typing import List
+from typing import List, Any
 
 from .base_callback import BaseCallback
-from ..state.epoch_state import EpochState
 
 
 class CallbacksRepo:
@@ -37,10 +36,23 @@ class CallbacksRepo:
 
     def notify_epoch_end(
             self,
-            epoch_state: EpochState
     ) -> None:
         for callback in self._callbacks_list:
-            callback.on_epoch_end(epoch_state=epoch_state)
+            callback.on_epoch_end()
+
+    def notify_train_batch(
+            self,
+            train_record: dict[str, Any],
+    ):
+        for callback in self._callbacks_list:
+            callback.on_train_batch(train_record=train_record)
+
+    def notify_val_batch(
+            self,
+            val_record: dict[str, Any],
+    ):
+        for callback in self._callbacks_list:
+            callback.on_val_batch(val_record=val_record)
 
     def should_stop_training(self) -> bool:
         for callback in self._callbacks_list:

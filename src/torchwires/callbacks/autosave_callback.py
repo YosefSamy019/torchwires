@@ -1,8 +1,7 @@
-from typing import Literal, Callable
+from typing import Callable, Any
 
 from .base_callback import BaseCallback
 from ..common.logger.logger import print_log
-from ..state.epoch_state import EpochState
 
 
 class AutoSaveCallback(BaseCallback):
@@ -10,32 +9,27 @@ class AutoSaveCallback(BaseCallback):
             self,
             save_function: Callable[[str], None],
             interval: int,
-            checkpoint_name: str,
-            concat_with_epoch_no: bool,
     ):
-        super().__init__()
         self._save_function = save_function
         self._interval = interval
-        self._checkpoint_name = checkpoint_name
-        self._concat_with_epoch_no = concat_with_epoch_no
 
-    def on_epoch_end(self, epoch_state: EpochState):
-        cur_epoch = epoch_state.aggregate_over_batches(
-            split="train",
-            feature=epoch_state.KEY_EPOCH_NO,
-            func='max'
-        )
+        self._last_epoch_no = None
 
-        if cur_epoch % self._interval == 0:
-            if self._concat_with_epoch_no:
-                save_name = f"{self._checkpoint_name} epoch={cur_epoch}"
-            else:
-                save_name = f"{self._checkpoint_name}"
+    def on_train_batch(
+            self,
+            train_record: dict[str, Any],
+    ):
+        if 'epoch' in train_record:
+            self._last_epoch_no = train_record['epoch']
+
+    def on_epoch_end(self):
+        if self._last_epoch_no % self._interval == 0:
+            checkpoint_name = f"auto_save epoch {self._last_epoch_no}"
 
             print_log(
                 title="Auto Save Checkpoint",
                 content=
-                f"save to checkpoint {save_name}",
+                f"save to checkpoint '{checkpoint_name}'",
             )
 
-            self._save_function(save_name)
+            self._save_function(checkpoint_name)
