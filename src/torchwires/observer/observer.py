@@ -1,7 +1,7 @@
 import json
 import os.path
 from typing import Any, Dict
-
+import pandas as pd
 import torch
 
 from ..common.logger.logger import print_log
@@ -96,3 +96,6 @@ class Observer:
     @property
     def history_dict(self) -> list[dict[str, Any]]:
         return self._history_dict
+
+    def get_pandas(self) -> pd.DataFrame:
+        return pd.DataFrame(self._history_dict)
