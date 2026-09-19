@@ -6,14 +6,21 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- Add Hugging Face integration
-- experiment accessibility
-- automatic experiment detection in visualizer
-- optimizer LR tracking during training
+- Nothing
 
 ### Fixed
 
-- No fixes released yet.
+- Nothing
+
+## [1.1.0] - 2026-09-19
+
+### Changes
+
+- Add Hugging Face integration
+- Experiment accessibility
+- Automatic experiment detection in visualizer
+- Optimizer LR tracking during training
+- Add new callback: ReduceLROnPlateauCallback
 
 ## [1.0.0] - 2026-09-17
 
