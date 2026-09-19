@@ -1,12 +1,15 @@
 from typing import Any, Dict, Literal
 
 import torch
+from jinja2.optimizer import Optimizer
 
 from ..callbacks.autosave_callback import AutoSaveCallback
 from ..callbacks.callbacks_repo import CallbacksRepo
 from ..callbacks.checkpoint_callback import CheckpointCallback
 from ..callbacks.early_stopping_callback import EarlyStoppingCallback
+from ..callbacks.reduce_lr_on_plateau_callback import ReduceLROnPlateauCallback
 from ..common.logger.logger import print_log
+from ..optimizers.optimizer_unit import OptimizerUnit
 from ..pass_state.pass_state import PassState
 from ..repo.repo import Repo
 from ..tqdm.tqdm import Tqdm
@@ -72,6 +75,32 @@ class Runner:
                 mode=mode,
                 aggregate_mode=aggregate_mode,
                 patience=patience
+            )
+        )
+
+    def enable_reduce_lr_on_plateau(
+            self,
+            optimizer_name: str,
+            split: Literal["train", "val"],
+            monitor: str,
+            mode: Literal["min", "max"],
+            aggregate_mode: Literal["mean", "sum", "last"],
+            patience: int,
+            factor: float = 0.1,
+            min_lr: float = 1e-5,
+    ):
+        optimizer: OptimizerUnit = self._optimizers_repo.get(optimizer_name)
+
+        self._callbacks_repo.register_callback(
+            ReduceLROnPlateauCallback(
+                optimizer=optimizer,
+                split=split,
+                monitor=monitor,
+                mode=mode,
+                aggregate_mode=aggregate_mode,
+                patience=patience,
+                factor=factor,
+                min_lr=min_lr,
             )
         )
 
@@ -158,7 +187,8 @@ class Runner:
 
         # optimizer step
         if flag_train:
-            self._optimizers_repo.step()
+            optimizers_state = self._optimizers_repo.step()
+            state.update(optimizers_state)
 
     def train(
             self,

@@ -3,7 +3,9 @@ from typing import Callable, Any
 
 import torch
 from torch import nn
+from huggingface_hub import snapshot_download, HfApi
 
+from ..common.logger.logger import print_log
 from ..constants.constants import DEFAULT_CHECKPOINT_NAME
 from ..models.models_repo import ModelsRepo
 from ..nodes.nodes_repo import NodesRepo
@@ -15,10 +17,12 @@ class Repo:
     def __init__(
             self,
             repo_name: str,
-            auto_load: bool = True,
+            experiment: str,
+            huggingface_repo_id: str | None = None
     ):
         self._repo_name = repo_name
-        self._experiment = "exp_1"
+        self._experiment = experiment
+        self._huggingface_repo_id = huggingface_repo_id
 
         self._models_repo = ModelsRepo()
         self._optimizers_repo = OptimizersRepo()
@@ -28,8 +32,19 @@ class Repo:
         os.makedirs(self._repo_name, exist_ok=True)
         os.makedirs(os.path.join(self._repo_name, self.experiment), exist_ok=True)
 
-        if auto_load:
-            self.load()
+        if huggingface_repo_id is not None:
+            print_log(
+                title="Downloading from Huggingface",
+                content=f'repo-id={self._huggingface_repo_id}'
+            )
+
+            snapshot_download(
+                repo_id=self._huggingface_repo_id,
+                repo_type="model",
+                local_dir=self._repo_name,
+            )
+
+        self.load()
 
     @property
     def repo_name(self) -> str:
@@ -79,6 +94,7 @@ class Repo:
     def save(
             self,
             checkpoint: str = DEFAULT_CHECKPOINT_NAME,
+            push_to_huggingface: bool = True,
     ):
         self._models_repo.save(
             checkpoint=checkpoint,
@@ -97,6 +113,20 @@ class Repo:
             experiment=self._experiment,
         )
 
+        if self._huggingface_repo_id is not None and push_to_huggingface:
+            print_log(
+                title="Pushing to Huggingface",
+                content=f'repo-id={self._huggingface_repo_id}'
+            )
+
+            api = HfApi()
+
+            api.upload_folder(
+                folder_path=self._repo_name,
+                repo_id=self._huggingface_repo_id,
+                repo_type="model",
+            )
+
     def register(
             self,
             name: str,
@@ -113,14 +143,18 @@ class Repo:
             )
 
         elif isinstance(value, torch.optim.Optimizer):
-            self._optimizers_repo.register(
+            opt = self._optimizers_repo.register(
                 name=name,
                 optimizer=value,
-            ).load_optimizer(
+            )
+
+            opt.load_optimizer(
                 repo_name=self._repo_name,
                 experiment=self._experiment,
                 checkpoint=DEFAULT_CHECKPOINT_NAME
             )
+
+            self._observer.track_features(opt.tracked_features)
         else:
             raise TypeError(
                 "Argument 'value' is not Supported"

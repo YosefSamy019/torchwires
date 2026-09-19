@@ -1,9 +1,12 @@
 import math
+import os
 from typing import Tuple, List
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.pyplot import title
 
+from ..common.logger.logger import print_log
 from ..repo.repo import Repo
 
 
@@ -57,7 +60,7 @@ class Visualizer:
         axs = axs.reshape(n_rows, -1)
 
         fig.suptitle(
-            f"Repo: {repo.repo_name}",
+            f"Repo: {repo.repo_name}/{repo.experiment}",
         )
 
         fig.set_size_inches(
@@ -142,7 +145,7 @@ class Visualizer:
         )
 
         fig.suptitle(
-            "Repos: " + ", ".join([r.repo_name for r in repos])
+            "Repos: " + ", ".join([r.repo_name + '/' + r.experiment for r in repos])
         )
 
         for row_idx, feature in enumerate(all_features):
@@ -164,7 +167,7 @@ class Visualizer:
                         flag_del_cell = False
                         axs[row_idx, col_idx].plot(
                             x_data, y_data,
-                            label=f"{repo.repo_name}",
+                            label=f"{repo.repo_name}/{repo.experiment}",
                         )
 
                 if flag_del_cell:
@@ -175,3 +178,45 @@ class Visualizer:
                     axs[row_idx, col_idx].legend()
 
         plt.show()
+
+    @staticmethod
+    def visualize_experiments(
+            repo_name: str,
+            style_no: int = 12,
+            cell_size: Tuple[float, float] = (7.0, 2.5),
+            wspace: float = 1 / 5,
+            hspace: float = 1 / 3,
+            huggingface_repo_id: str | None = None,
+            exclude: set[str] = (
+                    '.cache',
+            )
+    ):
+
+        folders = [
+            name for name in os.listdir(repo_name)
+            if os.path.isdir(os.path.join(repo_name, name))
+        ]
+
+        folders = list(set(folders) - set(exclude))
+
+        print_log(
+            title='Experiments',
+            content=", ".join(folders),
+        )
+
+        repos: list[Repo] = [
+            Repo(
+                repo_name=repo_name,
+                experiment=e,
+                huggingface_repo_id=huggingface_repo_id
+            )
+            for e in folders
+        ]
+
+        Visualizer.visualize_comparison(
+            repos=repos,
+            style_no=style_no,
+            cell_size=cell_size,
+            wspace=wspace,
+            hspace=hspace,
+        )

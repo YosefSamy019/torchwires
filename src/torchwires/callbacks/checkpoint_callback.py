@@ -89,3 +89,6 @@ class CheckpointCallback(BaseCallback):
             self._best_value = cur_agg_val
 
             self._save_function(self._checkpoint_name)
+
+        # Important: start collecting values for the next epoch
+        self._stores_values.clear()
