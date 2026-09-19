@@ -79,5 +79,16 @@ class OptimizerUnit:
         return optimizer_state
 
     @property
+    def name(self):
+        return self._name
+
+    @property
     def tracked_features(self) -> list[str]:
         return list(self._tracked_features_dict.keys())
+
+    @property
+    def lr(self)->float:
+        return self._optimizer.param_groups[0]['lr']
+
+    def set_lr(self, new_lr:float):
+        self._optimizer.param_groups[0]['lr'] = new_lr

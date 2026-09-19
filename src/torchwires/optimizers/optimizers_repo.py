@@ -73,3 +73,6 @@ class OptimizersRepo:
             optimizers_state.update(opt_state)
 
         return optimizers_state
+
+    def get(self, optimizer_name: str) -> OptimizerUnit:
+        return self._optimizers[optimizer_name]

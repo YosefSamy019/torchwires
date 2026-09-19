@@ -98,5 +98,8 @@ class EarlyStoppingCallback(BaseCallback):
                 content=f"counter={self._counter:d}/{self._patience}, best={self._best_value}",
             )
 
+        # Important: start collecting values for the next epoch
+        self._stores_values.clear()
+
     def should_stop_training(self) -> bool:
         return self._counter >= self._patience

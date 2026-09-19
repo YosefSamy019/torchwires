@@ -6,7 +6,10 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- No improvements released yet
+- Add Hugging Face integration
+- experiment accessibility
+- automatic experiment detection in visualizer
+- optimizer LR tracking during training
 
 ### Fixed
 
