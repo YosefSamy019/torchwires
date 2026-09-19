@@ -66,7 +66,7 @@ class Observer:
         )
 
         with open(cache_path, "w") as f:
-            json.dump(self._history_dict, f)
+            json.dump(self._history_dict, f, indent=4)
 
         if not silent:
             print_log(

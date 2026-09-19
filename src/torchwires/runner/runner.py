@@ -158,7 +158,8 @@ class Runner:
 
         # optimizer step
         if flag_train:
-            self._optimizers_repo.step()
+            optimizers_state = self._optimizers_repo.step()
+            state.update(optimizers_state)
 
     def train(
             self,

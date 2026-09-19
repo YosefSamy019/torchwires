@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 
 import torch
 
@@ -66,5 +66,10 @@ class OptimizersRepo:
             optimizer.zero_grad()
 
     def step(self):
+        optimizers_state: Dict[str, Any] = {}
+
         for optimizer in self._optimizers.values():
-            optimizer.step()
+            opt_state = optimizer.step()
+            optimizers_state.update(opt_state)
+
+        return optimizers_state

@@ -1,4 +1,6 @@
 import os.path
+from collections.abc import Callable
+from typing import Any, Dict
 
 import torch
 
@@ -15,6 +17,9 @@ class OptimizerUnit:
     ):
         self._name = name
         self._optimizer = optimizer
+        self._tracked_features_dict: dict[str, Callable[[], Any]] = {
+            f'{self._name}.lr': lambda: self._optimizer.param_groups[0]['lr'],
+        }
 
     def load_optimizer(
             self,
@@ -63,5 +68,16 @@ class OptimizerUnit:
     def zero_grad(self):
         self._optimizer.zero_grad()
 
-    def step(self):
+    def step(self) -> Dict[str, Any]:
         self._optimizer.step()
+
+        optimizer_state: dict[str, Any] = {
+            k: v()
+            for k, v in self._tracked_features_dict.items()
+        }
+
+        return optimizer_state
+
+    @property
+    def tracked_features(self) -> list[str]:
+        return list(self._tracked_features_dict.keys())
